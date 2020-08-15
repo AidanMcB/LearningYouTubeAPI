@@ -8,6 +8,7 @@ import Homepage from './components/Homepage'
 import axios from 'axios';
 
 function App() {
+
   //q= is equivelant to the input search term, API key must be generated with google account
   // Search Result Paramaters with my API key
   // Google Developer Console => API dashboard
@@ -17,19 +18,27 @@ function App() {
 
   //OR search by video ID, available from searchResult response 
   //https://www.googleapis.com/youtube/v3/videos?part=snippet&id=Tqth0fKo0_g&maxResults=5&key=AIzaSyBkRxNBktlEpXjJcwPQRHwvRgYYXP3MOiQ
+ 
+  //iframe with a src attribute set equal to:
+  // https://www.youtube.com/embeded/${video.id.videoId}
+  // allowFullScreen title=Video Player
+ 
   const key = `AIzaSyBkRxNBktlEpXjJcwPQRHwvRgYYXP3MOiQ`
 
   const getYTdata = (e, search) => {
     e.preventDefault()
     // debugger
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${search}&key=${key}`)
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${search}&key=${key}`)
       .then( res => res.json())
-      .then( data => console.log(data))
+      .then( video => {
+         setVideo(video)
+      })
   }
-  const [videos, setVideos] = useState([])
+  const [video, setVideo] = useState({})
   const [searchTerm, setTerm] = useState('')
-    
+  // const vidSrc = `https://www.youtube.com/embeded/${video.id.videoId}`
   return (
+    console.log(video.items),
     <div className="App">
         <Homepage />
         <form onSubmit={(e) => getYTdata(e, searchTerm)}>
@@ -37,6 +46,7 @@ function App() {
           <input name="search" 
           onChange={(e) => setTerm( e.target.value )}></input>
         </form>
+        {video.items == undefined ? null : <iframe src={`https://www.youtube.com/embed/${video.items[0].id.videoId}`} allowFullScreen title="Video player" /> }
     </div>
   );
 }
